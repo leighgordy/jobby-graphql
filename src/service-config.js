@@ -5,6 +5,7 @@ const {
   retrieveJobs,
   updateJob,
   createJob,
+  deleteJob,
 } = require('./datalayer/fake-database');
 
 // Construct a schema, using GraphQL schema language
@@ -28,6 +29,7 @@ var schema = buildSchema(`
   type Mutation {
     updateJob(id: Float!, input: JobInput): Job
     createJob(input: JobInput): Job
+    deleteJob(id: Float!): Boolean
   }
 `);
 
@@ -37,6 +39,7 @@ var root = {
   jobs: retrieveJobs,
   updateJob: ({id, input}) => updateJob(id, input),
   createJob: ({input}) => createJob(input),
+  deleteJob: ({id}) => deleteJob(id),
 };
 
 module.exports = (app, path = '') => {
