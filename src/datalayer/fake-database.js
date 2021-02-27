@@ -1,5 +1,3 @@
-const { v4: uuidv4 } = require('uuid');
-
 let jobs = [
   {
     id: 123,
@@ -37,7 +35,7 @@ exports.createJob = (payload) => {
     throw new Error(`Email address '${email}' invalid.`);
   }
   const newJob = {
-    id: uuidv4(),
+    id: (Date.now() + Math.floor(Math.random() * 1000000000000) + 1),
     title,
     description,
     email,
@@ -50,7 +48,6 @@ exports.createJob = (payload) => {
 exports.retrieveJobs = () => jobs;
 
 exports.retrieveJob = (id) => {
-  console.log(id);
   if(id == null) {
     throw new Error('Missing id.');
   }

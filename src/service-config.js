@@ -1,19 +1,33 @@
 const { graphqlHTTP } = require('express-graphql');
 const { buildSchema } = require('graphql');
-const { retrieveJob, retrieveJobs } = require('./datalayer/fake-database');
+const {
+  retrieveJob,
+  retrieveJobs,
+  updateJob,
+  createJob,
+} = require('./datalayer/fake-database');
 
 // Construct a schema, using GraphQL schema language
 var schema = buildSchema(`
-  type Query {
-    job(id: Int!): Job
-    jobs: [Job]
+  input JobInput {
+    title: String!
+    description: String!
+    email: String!
   },
   type Job {
-    id: Int
+    id: Float
     title: String
     description: String
     email: String
-    created: Int
+    created: Float
+  },
+  type Query {
+    job(id: Float!): Job
+    jobs: [Job]
+  },
+  type Mutation {
+    updateJob(id: Float!, input: JobInput): Job
+    createJob(input: JobInput): Job
   }
 `);
 
@@ -21,6 +35,8 @@ var schema = buildSchema(`
 var root = {
   job: ({id}) => retrieveJob(id),
   jobs: retrieveJobs,
+  updateJob: ({id, input}) => updateJob(id, input),
+  createJob: ({input}) => createJob(input),
 };
 
 module.exports = (app, path = '') => {
