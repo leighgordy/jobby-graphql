@@ -1,28 +1,33 @@
-const swaggerJsdoc = require('swagger-jsdoc');
-const swaggerUi = require('swagger-ui-express');
-const jobs = require('./routes/jobs');
-const errorHandler  = require('./error-handler');
+const { graphqlHTTP } = require('express-graphql');
+const { buildSchema } = require('graphql');
+const { retrieveJob, retrieveJobs } = require('./datalayer/fake-database');
 
-const specs = swaggerJsdoc({
-  definition: {
-    openapi: '3.0.0',
-    info: {
-      title: 'Jobby API',
-      version: '1.0.0',
-      description:
-        'Dummy API that will let me experiment with frontend frameworks',
-    },
+// Construct a schema, using GraphQL schema language
+var schema = buildSchema(`
+  type Query {
+    job(id: Int!): Job
+    jobs: [Job]
   },
-  apis: ['./src/routes/*.js'],
-});
+  type Job {
+    id: Int
+    title: String
+    description: String
+    email: String
+    created: Int
+  }
+`);
+
+// The root provides a resolver function for each API endpoint
+var root = {
+  job: ({id}) => retrieveJob(id),
+  jobs: retrieveJobs,
+};
 
 module.exports = (app, path = '') => {
-  app.use(
-    '/api-docs',
-    swaggerUi.serve,
-    swaggerUi.setup(specs)
-  );
-  app.use(`${path}/jobs`, jobs);
-  app.use(errorHandler);
+  app.use(`${path}/graphql`, graphqlHTTP({
+    schema: schema,
+    rootValue: root,
+    graphiql: true,
+  }));
   return app;
 };

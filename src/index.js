@@ -8,5 +8,5 @@ service(app);
 
 app.listen(port, () => {
   // eslint-disable-next-line no-undef
-  console.log(`app listening at http://localhost:${port}/api-docs`);
+  console.log(`app listening at http://localhost:${port}/graphql`);
 });
