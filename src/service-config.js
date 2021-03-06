@@ -6,7 +6,7 @@ const {
   updateJob,
   createJob,
   deleteJob,
-} = require('./datalayer/fake-database');
+} = require('jobby-db');
 
 // Construct a schema, using GraphQL schema language
 var schema = buildSchema(`
